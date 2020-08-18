@@ -1459,6 +1459,9 @@ HTML;
             case 'offline':
                 $res = sys_config('offline_pay_status') == 1 ? true : false;
                 break;
+            case 'zfp':
+                $res = true;
+                break;
         }
         return $res;
     }

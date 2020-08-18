@@ -3,6 +3,8 @@
 namespace app\api\controller\v1\order;
 
 use app\Request;
+use app\services\ybmp\YbmpHandleServices;
+use think\facade\Env;
 use app\services\system\admin\SystemAdminServices;
 use app\services\activity\{
     StoreBargainServices, StorePinkServices, StoreSeckillServices
@@ -23,9 +25,11 @@ use app\services\product\product\StoreProductReplyServices;
 use app\services\shipping\ShippingTemplatesServices;
 use app\services\system\attachment\SystemAttachmentServices;
 use app\services\system\store\SystemStoreServices;
+use app\services\bank\ZhifpServices;
 use crmeb\services\CacheService;
 use crmeb\services\ExpressService;
 use crmeb\services\UtilService;
+
 
 /**
  * 订单控制器
@@ -86,15 +90,15 @@ class StoreOrderController
         $uid = $request->uid();
         if ($this->services->be(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0]))
             return app('json')->status('extend_order', '订单已生成', ['orderId' => $key, 'key' => $key]);
-        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $shipping_type) = $request->postMore([
+        list($addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $shipping_type,$electronic_code) = $request->postMore([
             'addressId', 'couponId', ['payType', 'yue'], ['useIntegral', 0], 'mark', ['combinationId', 0], ['pinkId', 0], ['seckill_id', 0], ['bargainId', ''],
-            ['shipping_type', 1],
+            ['shipping_type', 1],['electronic_code', '']
         ], true);
         $payType = strtolower($payType);
         $cartGroup = $this->services->getCacheOrderInfo($uid, $key);
         if (!$cartGroup) return app('json')->fail('订单已过期,请刷新当前页面!', true);
 
-        $priceGroup = $computedServices->computedOrder($request->uid(), $key, $cartGroup, $addressId, $payType, !!$useIntegral, (int)$couponId, false, (int)$shipping_type);
+        $priceGroup = $computedServices->computedOrder($request->uid(), $key, $cartGroup, $addressId, $payType, !!$useIntegral, (int)$couponId, false, (int)$shipping_type,$electronic_code);
         if ($priceGroup)
             return app('json')->status('NONE', 'ok', $priceGroup);
         else
@@ -117,7 +121,7 @@ class StoreOrderController
         $uid = (int)$request->uid();
         if ($this->services->be(['order_id|unique' => $key, 'uid' => $uid, 'is_del' => 0]))
             return app('json')->status('extend_order', '订单已生成', ['orderId' => $key, 'key' => $key]);
-        [$addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $from, $shipping_type, $real_name, $phone, $storeId, $news] = $request->postMore([
+        [$addressId, $couponId, $payType, $useIntegral, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $from, $shipping_type, $real_name, $phone, $storeId, $news,$electronic_code] = $request->postMore([
             [['addressId', 'd'], 0],
             [['couponId', 'd'], 0],
             ['payType', ''],
@@ -132,7 +136,8 @@ class StoreOrderController
             ['real_name', ''],
             ['phone', ''],
             [['store_id', 'd'], 0],
-            ['new', 0]
+            ['new', 0],
+            ['electronic_code','']
         ], true);
         $payType = strtolower($payType);
 
@@ -178,7 +183,7 @@ class StoreOrderController
             }
         }
 
-        $order = $createServices->createOrder($uid, $key, $cartGroup, $request->user()->toArray(), $addressId, $payType, !!$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $isChannel, $shipping_type, $real_name, $phone, $storeId, !!$news);
+        $order = $createServices->createOrder($uid, $key, $cartGroup, $request->user()->toArray(), $addressId, $payType, !!$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $isChannel, $shipping_type, $real_name, $phone, $storeId, !!$news,$electronic_code);
         if ($order === false) {
             //回退占用
             $seckillServices->cancelOccupySeckillStock($cartGroup['cartInfo'], $key);
@@ -231,6 +236,31 @@ class StoreOrderController
                     break;
                 case 'offline':
                     return app('json')->status('success', '订单创建成功', $info);
+                    break;
+                case 'zfp':
+                    if ($orderInfo['paid']) return app('json')->fail('支付已支付!');
+                    /** @var  ZhifpServices $zfpServices */
+                    $zfpServices = app()->make(ZhifpServices::class);
+                    $bankInfo = $zfpServices->getBankInfo();
+                    $extend = json_decode($bankInfo['extend'], true);
+                    $zfp_data = [
+                        'uid' => $bankInfo['uid'],
+                        'price' => $orderInfo["pay_price"],
+                        'paytype' => 8,
+                        'notify_url' => Env::get('bank.order_back', ''),
+                        'return_url' => '',
+                        'orderno' => $orderInfo["order_id"],
+                        'orderuid' => '',
+                        'goodsname' => '订单支付',
+                        'attach' => 'ddzf',
+                        'token' => $bankInfo['token']
+                    ];
+                    $res = $zfpServices->zfpai($zfp_data);
+                    if($res['code']==200){
+                        return app('json')->status('zfp_pay', '订单创建成功', $res['datas']);
+                    }else{
+                        return app('json')->status('zfp_pay_error');
+                    }
                     break;
             }
         } else return app('json')->fail('订单生成失败!');
@@ -637,5 +667,42 @@ class StoreOrderController
         $cartProduct['order_id'] = $this->services->value(['id' => $cartInfo['oid']], 'order_id');
         return app('json')->successful($cartProduct);
     }
+
+    /**
+     * 支付派订单回调
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function orderBack(Request $request, StoreOrderServices $services)
+    {
+        
+
+    }
+
+    /**
+     * 获取电子券
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function getElectronicVoucher(Request $request)
+    {
+        list($code) = $request->postMore([['electronic_code', '']], true);
+        if (!$code) return app('json')->fail('参数错误');
+        /** @var YbmpHandleServices $ybmpHandleServices */
+        $ybmpHandleServices = app()->make(YbmpHandleServices::class);
+        $res = $ybmpHandleServices->getElectronicVoucher($code);
+        if($res['code']){
+            return app('json')->fail($res['msg']);
+        }
+        return app('json')->successful($res['info']);
+
+    }
+
 
 }

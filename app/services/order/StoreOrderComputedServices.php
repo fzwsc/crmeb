@@ -15,6 +15,7 @@ use app\services\shipping\ShippingTemplatesServices;
 use app\services\user\UserAddressServices;
 use app\services\user\UserServices;
 use think\exception\ValidateException;
+use app\services\ybmp\YbmpHandleServices;
 
 /**
  * 订单计算金额
@@ -50,9 +51,10 @@ class StoreOrderComputedServices extends BaseServices
      * @param int $couponId
      * @param bool $is_create
      * @param int $shipping_type
+     * @param string $electronic_code
      * @return array
      */
-    public function computedOrder(int $uid, string $key, array $cartGroup, int $addressId, string $payType, bool $useIntegral = false, int $couponId = 0, bool $isCreate = false, int $shippingType = 1)
+    public function computedOrder(int $uid, string $key, array $cartGroup, int $addressId, string $payType, bool $useIntegral = false, int $couponId = 0, bool $isCreate = false, int $shippingType = 1,$electronic_code='')
     {
         $offlinePayStatus = (int)sys_config('offline_pay_status') ?? (int)2;
         if ($offlinePayStatus == 2) unset($this->payType['offline']);
@@ -72,7 +74,9 @@ class StoreOrderComputedServices extends BaseServices
         $priceGroup = $cartGroup['priceGroup'];
         $other = $cartGroup['other'];
         $payPrice = (float)$priceGroup['totalPrice'];
-        /** @var UserAddressServices $addressServices */
+        $electronic_sub_price = 0;
+
+            /** @var UserAddressServices $addressServices */
         $addressServices = app()->make(UserAddressServices::class);
         $addr = $addressServices->getAddress($addressId);
         if ($addr) {
@@ -80,10 +84,26 @@ class StoreOrderComputedServices extends BaseServices
         } else {
             $addr = [];
         }
+        //使用电子券
+        /** @var YbmpHandleServices $YbmpHandleServices */
+        if($electronic_code){
+            $ybmpHandleServices = new YbmpHandleServices();// app()->make(YbmpHandleServices::class);
+            $electronic_info = $ybmpHandleServices->getElectronicVoucher($electronic_code);
+            if($electronic_info['code']){
+                throw new ValidateException($electronic_info['msg']);
+            }
+            if($payPrice<$electronic_info['info']['price']){
+                throw new ValidateException('电子券不满足使用金额');
+            }
+            $payPrice = $payPrice-$electronic_info['info']['sub_price'];
+            $electronic_sub_price = $electronic_info['info']['sub_price'];
+        }
+
         //使用优惠劵
         [$payPrice, $couponPrice] = $this->useCouponId($couponId, $uid, $cartInfo, $payPrice, $isCreate);
         //使用积分
         [$payPrice, $deductionPrice, $usedIntegral, $SurplusIntegral] = $this->useIntegral($useIntegral, $userInfo, $payPrice, $other);
+
         //计算邮费
         [$payPrice, $payPostage] = $this->computedPayPostage($shippingType, $payType, $cartInfo, $addr, $payPrice, $other);
 
@@ -95,6 +115,7 @@ class StoreOrderComputedServices extends BaseServices
             'deduction_price' => $deductionPrice,
             'usedIntegral' => $usedIntegral,
             'SurplusIntegral' => $SurplusIntegral,
+            'electronic_sub_price'=>$electronic_sub_price
         ];
         return $result;
     }
