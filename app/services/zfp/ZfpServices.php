@@ -40,7 +40,7 @@ class  ZfpServices extends BaseServices
     {
         /** @var ZhifpServices $zhifpServices */
         $zhifpServices = app()->make(ZhifpServices::class);
-        if(!$zhifpServices->zfp_check_sign()){
+        if(!$zhifpServices->zfp_check_sign($input)){
             throw new ValidateException('支付单号签名验证失败');
         }
 

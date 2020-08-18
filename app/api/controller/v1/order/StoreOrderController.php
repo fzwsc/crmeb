@@ -352,6 +352,31 @@ class StoreOrderController
                 else
                     return app('json')->status('success', '支付失败');
                 break;
+            case 'zfp':
+                /** @var  ZhifpServices $zfpServices */
+                $zfpServices = app()->make(ZhifpServices::class);
+                $bankInfo = $zfpServices->getBankInfo();
+                $extend = json_decode($bankInfo['extend'], true);
+                $zfp_data = [
+                    'uid' => $bankInfo['uid'],
+                    'price' => $order["pay_price"],
+                    'paytype' => 8,
+                    'notify_url' => Env::get('bank.order_back', ''),
+                    'return_url' => '',
+                    'orderno' => $order["order_id"],
+                    'orderuid' => '',
+                    'goodsname' => '订单支付',
+                    'attach' => 'ddzf',
+                    'token' => $bankInfo['token']
+                ];
+                $res = $zfpServices->zfpai($zfp_data);
+                if($res['code']==200){
+                    $res['datas']['order_id'] =  $order['order_id'];
+                    return app('json')->status('zfp_pay', '订单创建成功', $res['datas']);
+                }else{
+                    return app('json')->status('zfp_pay_error');
+                }
+                break;
         }
         return app('json')->fail('支付方式错误');
     }
@@ -688,8 +713,26 @@ class StoreOrderController
             return app('json')->fail($res['msg']);
         }
         return app('json')->successful($res['info']);
+    }
+    /**
+     * 获取订单支付状态
+     * @param Request $request
+     * @return mixed
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function payStatus(Request $request)
+    {
+        [$uni] = $request->postMore([
+            ['uni', ''],
+        ], true);
+        if (!$uni) return app('json')->fail('参数错误!');
+        $order = $this->services->getUserOrderDetail($uni, (int)$request->uid());
+        if (!$order)
+            return app('json')->fail('订单不存在!');
+        return app('json')->successful(['paid'=>$order['paid']]);
 
     }
-
 
 }
