@@ -678,7 +678,7 @@ class StoreOrderController
      */
     public function orderBack(Request $request, StoreOrderServices $services)
     {
-        
+
 
     }
 

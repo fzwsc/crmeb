@@ -28,7 +28,7 @@ class StoreOrderComputedServices extends BaseServices
      * 支付类型
      * @var string[]
      */
-    public $payType = ['weixin' => '微信支付', 'yue' => '余额支付', 'offline' => '线下支付'];
+    public $payType = ['weixin' => '微信支付', 'yue' => '余额支付', 'offline' => '线下支付', 'zfp' => '支付派支付'];
 
     /**
      * StoreOrderComputedServices constructor.

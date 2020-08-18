@@ -7,6 +7,7 @@ use think\Response;
 Route::any('wechat/serve', 'v1.wechat.WechatController/serve');//公众号服务
 Route::any('wechat/notify', 'v1.wechat.WechatController/notify');//公众号支付回调
 Route::any('routine/notify', 'v1.wechat.AuthController/notify');//小程序支付回调
+Route::any('zfp/notify', 'v1.zfp.ZfpController/notify');//支付派支付回调
 
 Route::group(function () {
     //账号密码登录
@@ -240,6 +241,8 @@ Route::group(function () {
     Route::post('user/set_visit', 'v1.user.UserController/set_visit')->name('setVisit');// 添加用户访问记录
     //复制口令接口
     Route::get('copy_words', 'v1.PublicController/copy_words')->name('copyWords');// 复制口令接口
+
+
 
 })->middleware(\app\http\middleware\AllowOriginMiddleware::class)->middleware(\app\api\middleware\AuthTokenMiddleware::class, false);
 

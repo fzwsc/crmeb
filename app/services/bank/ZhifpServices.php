@@ -182,7 +182,7 @@ class ZhifpServices extends BaseServices
     }
 
 
-    public function zfp_check_sign($bank_id,$input)
+    public function zfp_check_sign($input)
     {
         $bankInfo = $this->dao->getBank();
         $data_zfp = [
