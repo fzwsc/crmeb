@@ -668,19 +668,6 @@ class StoreOrderController
         return app('json')->successful($cartProduct);
     }
 
-    /**
-     * 支付派订单回调
-     * @param Request $request
-     * @return mixed
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function orderBack(Request $request, StoreOrderServices $services)
-    {
-
-
-    }
 
     /**
      * 获取电子券

@@ -663,4 +663,18 @@ if (!function_exists('array_bc_sum')) {
     }
 }
 
+if (!function_exists('make_sign')) {
+
+    /**
+     * 生成签名
+     * @param $data
+     * @return string
+     */
+    function make_sign($data)
+    {
+        $tmpStr = sign_string($data);
+        $sign = md5($tmpStr);
+        return $sign;
+    }
+}
 
