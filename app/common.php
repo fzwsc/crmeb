@@ -678,3 +678,47 @@ if (!function_exists('make_sign')) {
     }
 }
 
+if (!function_exists('sign_string')) {
+
+    /**
+     * 生成签名
+     * @param $data
+     * @return string
+     */
+    function sign_string($data)
+    {
+        $tmpArr = [];
+        foreach ($data as $k => $v) {
+            if ($k == 'sign') {
+                continue;
+            }
+            array_push($tmpArr, $k);
+        }
+        sort($tmpArr, SORT_STRING);
+        $tmpStr = '';
+        foreach ($tmpArr as $k => $v) {
+            $tmpStr .= $data[$v];
+        }
+        return $tmpStr;
+    }
+}
+
+if (!function_exists('check_sign')) {
+
+    /**
+     * 验证签名
+     * @param $data
+     * @param $sign
+     * @return bool
+     */
+    function check_sign($data, $sign)
+    {
+        $tmpStr = sign_string($data);
+        if (md5($tmpStr) == $sign) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
