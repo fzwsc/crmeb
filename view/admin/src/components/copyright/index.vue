@@ -28,7 +28,8 @@ export default {
           href: 'https://help.crmeb.net'
         }
       ],
-      copyright: 'Copyright © 2020 西安众邦网络科技有限公司'
+      copyright: 'Copyright © 2020 福州微世创信息科技有限公司'
+      /*copyright: 'Copyright © 2020 西安众邦网络科技有限公司'*/
     }
   },
   mounted () {
