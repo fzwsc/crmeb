@@ -28,7 +28,7 @@ class  YbmpHandleServices extends BaseServices
     public function getElectronicVoucher($code)
     {
         $rs = ['code'=>0,'msg'=>'','info'=>[]];
-        $evu = $this->db->name('ybmp_electronic_voucher_use')->where('code',$code)->find();
+        $evu = Db::connect('ybmp')->name('ybmp_electronic_voucher_use')->where('code',$code)->find();
         if(!$evu){
             $rs['code'] = 1;
             $rs['msg'] = '电子券不存在';
@@ -44,7 +44,7 @@ class  YbmpHandleServices extends BaseServices
             $rs['msg'] = '该电子券不在使用期或已过期';
             return $rs;
         }
-        $yev = $this->db->name('ybmp_electronic_voucher')->where('id',$evu['e_id'])->find();
+        $yev = Db::connect('ybmp')->name('ybmp_electronic_voucher')->where('id',$evu['e_id'])->find();
         if(!$yev){
             $rs['code'] = 1;
             $rs['msg'] = '电子券不存在';
@@ -71,7 +71,7 @@ class  YbmpHandleServices extends BaseServices
             'status'=>1,
             'use_time'=>time()
         ];
-        return $this->db->name('ybmp_electronic_voucher_use')->where('code',$code)->update($update);
+        return Db::connect('ybmp')->name('ybmp_electronic_voucher_use')->where('code',$code)->update($update);
     }
 
     /**
@@ -83,11 +83,11 @@ class  YbmpHandleServices extends BaseServices
      */
     public function sendCommission($code)
     {
-        $evu = $this->db->name('ybmp_electronic_voucher_use')->where('code',$code)->find();
+        $evu = Db::connect('ybmp')->name('ybmp_electronic_voucher_use')->where('code',$code)->find();
         if(!$evu){
             return false;
         }
-        $ev = $this->db->name('ybmp_electronic_voucher')->where('id',$evu['e_id'])->find();
+        $ev = Db::connect('ybmp')->name('ybmp_electronic_voucher')->where('id',$evu['e_id'])->find();
         if(!$ev){
             return false;
         }
