@@ -17,6 +17,7 @@ use app\services\system\store\SystemStoreServices;
 use app\services\user\UserAddressServices;
 use app\services\user\UserBillServices;
 use app\services\user\UserServices;
+use app\services\ybmp\YbmpHandleServices;
 use crmeb\jobs\UnpaidOrderCancelJob;
 use crmeb\jobs\UnpaidOrderSend;
 use crmeb\services\CacheService;
@@ -97,17 +98,18 @@ class StoreOrderCreateServices extends BaseServices
      * @param string $phone
      * @param int $storeId
      * @param bool $news
+     * @param string $electronic_code
      * @return mixed
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function createOrder($uid, $key, $cartGroup, $userInfo, $addressId, $payType, $useIntegral = false, $couponId = 0, $mark = '', $combinationId = 0, $pinkId = 0, $seckillId = 0, $bargainId = 0, $isChannel = 0, $shippingType = 1, $real_name = '', $phone = '', $storeId = 0, $news = false)
+    public function createOrder($uid, $key, $cartGroup, $userInfo, $addressId, $payType, $useIntegral = false, $couponId = 0, $mark = '', $combinationId = 0, $pinkId = 0, $seckillId = 0, $bargainId = 0, $isChannel = 0, $shippingType = 1, $real_name = '', $phone = '', $storeId = 0, $news = false,$electronic_code='')
     {
         /** @var StoreOrderComputedServices $computedServices */
         $computedServices = app()->make(StoreOrderComputedServices::class);
-        $priceData = $computedServices->computedOrder($uid, $key, $cartGroup, $addressId, $payType, $useIntegral, $couponId, true, $shippingType);
+        $priceData = $computedServices->computedOrder($uid, $key, $cartGroup, $addressId, $payType, $useIntegral, $couponId, true, $shippingType,$electronic_code);
 
         /** @var UserAddressServices $addressServices */
         $addressServices = app()->make(UserAddressServices::class);
@@ -185,6 +187,8 @@ class StoreOrderCreateServices extends BaseServices
             'add_time' => time(),
             'unique' => $key,
             'shipping_type' => $shippingType,
+            'electronic_code'=>$electronic_code,
+            'electronic_money'=>$priceData['electronic_sub_price'],
         ];
         if ($shippingType === 2) {
             $orderInfo['verify_code'] = $this->getStoreCode();
@@ -215,6 +219,11 @@ class StoreOrderCreateServices extends BaseServices
             $cartServices->setCartInfo($order['id'], $cartInfo);
             return $order;
         });
+        if($electronic_code){
+            /** @var YbmpHandleServices $ybmpHandleServices */
+            $ybmpHandleServices = app()->make(YbmpHandleServices::class);
+            $ybmpHandleServices->updateElectronicVoucher($electronic_code);
+        }
         $this->orderCreateAfter($addressServices, $order, compact('cartInfo', 'addressId', 'cartIds', 'news'));
         CacheService::redisHandler()->delete('user_order_' . $uid . $key);
         /** @var StoreOrderStatusServices $statusService */

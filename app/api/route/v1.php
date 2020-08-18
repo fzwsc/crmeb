@@ -121,6 +121,7 @@ Route::group(function () {
     Route::post('order/pay', 'v1.order.StoreOrderController/pay')->name('orderPay'); //订单支付
     Route::post('order/product', 'v1.order.StoreOrderController/product')->name('orderProduct'); //订单商品信息
     Route::post('order/comment', 'v1.order.StoreOrderController/comment')->name('orderComment'); //订单评价
+    Route::post('order/electronic_voucher', 'v1.order.StoreOrderController/getElectronicVoucher')->name('ElectronicVoucher'); //电子券信息
     //活动---砍价
     Route::get('bargain/detail/:id', 'v1.activity.StoreBargainController/detail')->name('bargainDetail');//砍价商品详情
     Route::post('bargain/start', 'v1.activity.StoreBargainController/start')->name('bargainStart');//砍价开启
