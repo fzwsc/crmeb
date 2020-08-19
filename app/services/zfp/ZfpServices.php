@@ -47,7 +47,7 @@ class  ZfpServices extends BaseServices
         /** @var YbmpHandleServices $ybmpHandleServices */
         $ybmpHandleServices = app()->make(YbmpHandleServices::class);
 
-        $storeOrderServices = app()->make(StoreOrdertttttServices::class);
+        $storeOrderServices = app()->make(StoreOrderServices::class);
         $orderInfo = $storeOrderServices->getOne(['order_id' => $input['orderno']]);
         if (!$orderInfo || !isset($orderInfo['paid'])) {
             throw new ValidateException('支付订单不存在');
