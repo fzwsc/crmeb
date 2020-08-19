@@ -257,6 +257,7 @@ class StoreOrderController
                     ];
                     $res = $zfpServices->zfpai($zfp_data);
                     if($res['code']==200){
+                        $res['datas']['pay_id'] = $orderInfo['order_id'];
                         return app('json')->status('zfp_pay', '订单创建成功', $res['datas']);
                     }else{
                         return app('json')->status('zfp_pay_error');
@@ -371,7 +372,7 @@ class StoreOrderController
                 ];
                 $res = $zfpServices->zfpai($zfp_data);
                 if($res['code']==200){
-                    $res['datas']['order_id'] =  $order['order_id'];
+                    $res['datas']['pay_id'] =  $order['order_id'];
                     return app('json')->status('zfp_pay', '订单创建成功', $res['datas']);
                 }else{
                     return app('json')->status('zfp_pay_error');
