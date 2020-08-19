@@ -99,7 +99,7 @@ class  YbmpHandleServices extends BaseServices
             'mch_id'  =>  $evu['mch_id'],
             'order_id'=>  $evu['id'],
             'user_id' => $evu['send_id'],
-            'money'=>$ev['sub_price'],
+            'money'=>$ev['profit'],
             'create_time'=>time(),
             'type'=>3
         ];

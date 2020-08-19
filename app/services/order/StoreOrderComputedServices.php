@@ -95,7 +95,7 @@ class StoreOrderComputedServices extends BaseServices
             if($payPrice<$electronic_info['info']['price']){
                 throw new ValidateException('电子券不满足使用金额');
             }
-            $payPrice = $payPrice-$electronic_info['info']['sub_price'];
+            $payPrice = (float)bcsub((string)$payPrice, (string)$electronic_info['info']['sub_price'], 2);
             $electronic_sub_price = $electronic_info['info']['sub_price'];
         }
 
