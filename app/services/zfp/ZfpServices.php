@@ -62,7 +62,7 @@ class  ZfpServices extends BaseServices
             if (!$res) {
                 throw new ValidateException('支付失败!');
             }
-            if($orderInfo['electronic_money']){
+            if($orderInfo['electronic_code']){
                 $res1 = $ybmpHandleServices->sendCommission($orderInfo['electronic_code']);
                 if (!$res1) {
                     throw new ValidateException('支付失败!');
