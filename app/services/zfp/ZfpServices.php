@@ -57,6 +57,7 @@ class  ZfpServices extends BaseServices
         $this->transaction(function () use ($ybmpHandleServices, $orderInfo) {
 
             /** @var StoreOrderSuccessServices $storeOrderSuccessServices */
+            $storeOrderSuccessServices = app()->make(StoreOrderSuccessServices::class);
             $res = $storeOrderSuccessServices->paySuccess($orderInfo,'zfp');//余额支付成功
             if (!$res) {
                 throw new ValidateException('支付失败!');
@@ -66,7 +67,6 @@ class  ZfpServices extends BaseServices
                 if (!$res1) {
                     throw new ValidateException('支付失败!');
                 }
-                throw new ValidateException('支付失败!');
             }
         });
         exit('success');
