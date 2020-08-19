@@ -91,6 +91,9 @@ class  YbmpHandleServices extends BaseServices
         if(!$ev){
             return false;
         }
+        if(!$ev['profit']){
+            return true;
+        }
         $this->db->startTrans();
         $user_share_money = [
             'mch_id'  =>  $evu['mch_id'],
@@ -100,6 +103,7 @@ class  YbmpHandleServices extends BaseServices
             'create_time'=>time(),
             'type'=>3
         ];
+
         $res1 = Db::connect('ybmp')->name('ybmp_user_share_money')->insert($user_share_money);
         $res2 = Db::connect('ybmp')->name('ybmp_user')->where('uid',$evu['send_id'])
                         ->inc('total_price',$ev['profit'])
