@@ -16,6 +16,7 @@ use app\services\user\UserBillServices;
 use app\services\user\UserBrokerageFrozenServices;
 use app\services\user\UserServices;
 use app\services\wechat\WechatUserServices;
+use app\services\ybmp\YbmpHandleServices;
 use crmeb\jobs\RoutineTemplateJob;
 use crmeb\jobs\SmsAdminJob;
 use crmeb\jobs\WechatTemplateJob as TemplateJob;
@@ -102,6 +103,15 @@ class StoreOrderTakeServices extends BaseServices
             if (!($res1 && $res2 && $res3)) {
                 throw new ValidateException('收货失败!');
             }
+            if($order['electronic_code']){
+                /** @var YbmpHandleServices $ybmpHandleServices */
+                $ybmpHandleServices = app()->make(YbmpHandleServices::class);
+                $res1 = $ybmpHandleServices->sendCommission($order['electronic_code']);
+                if (!$res1) {
+                    throw new ValidateException('收货失败!');
+                }
+            }
+
             return true;
         });
 

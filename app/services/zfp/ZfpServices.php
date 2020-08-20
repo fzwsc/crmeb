@@ -12,7 +12,6 @@ use app\services\BaseServices;
 use app\services\bank\ZhifpServices;
 use app\services\order\StoreOrderServices;
 use app\services\order\StoreOrderSuccessServices;
-use app\services\ybmp\YbmpHandleServices;
 use think\exception\ValidateException;
 
 use think\facade\Config;
@@ -43,10 +42,6 @@ class  ZfpServices extends BaseServices
         if(!$zhifpServices->zfp_check_sign($input)){
             throw new ValidateException('支付单号签名验证失败');
         }
-
-        /** @var YbmpHandleServices $ybmpHandleServices */
-        $ybmpHandleServices = app()->make(YbmpHandleServices::class);
-
         $storeOrderServices = app()->make(StoreOrderServices::class);
         $orderInfo = $storeOrderServices->getOne(['order_id' => $input['orderno']]);
         if (!$orderInfo || !isset($orderInfo['paid'])) {
@@ -54,19 +49,12 @@ class  ZfpServices extends BaseServices
         }
         $orderInfo = $orderInfo->toArray();
 
-        $this->transaction(function () use ($ybmpHandleServices, $orderInfo) {
-
+        $this->transaction(function () use ($orderInfo) {
             /** @var StoreOrderSuccessServices $storeOrderSuccessServices */
             $storeOrderSuccessServices = app()->make(StoreOrderSuccessServices::class);
             $res = $storeOrderSuccessServices->paySuccess($orderInfo,'zfp');//余额支付成功
             if (!$res) {
                 throw new ValidateException('支付失败!');
-            }
-            if($orderInfo['electronic_code']){
-                $res1 = $ybmpHandleServices->sendCommission($orderInfo['electronic_code']);
-                if (!$res1) {
-                    throw new ValidateException('支付失败!');
-                }
             }
         });
         exit('success');
