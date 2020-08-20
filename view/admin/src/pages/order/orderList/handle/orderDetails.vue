@@ -26,6 +26,7 @@
                 <Col span="12">优惠券金额：{{orderDatalist.orderInfo.coupon_price}}</Col>
               </Row>
               <Row class="mb10">
+                <Col span="12" class="mb10">电子券优惠金额：{{orderDatalist.orderInfo.electronic_money}}</Col>
                 <Col span="12" class="mb10">实际支付：{{orderDatalist.orderInfo.pay_price}}</Col>
                 <Col span="12" class="fontColor3 mb10" v-if="parseFloat(orderDatalist.orderInfo.refund_price)">退款金额：{{parseFloat(orderDatalist.orderInfo.refund_price)}}</Col>
                 <Col span="12" class="fontColor3 mb10" v-if="parseFloat(orderDatalist.orderInfo.use_integral)">使用积分：{{parseFloat(orderDatalist.orderInfo.use_integral)}}</Col>
