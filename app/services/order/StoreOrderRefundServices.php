@@ -25,6 +25,7 @@ use crmeb\services\FormBuilder as Form;
 use crmeb\services\MiniProgramService;
 use crmeb\services\WechatService;
 use crmeb\services\workerman\ChannelService;
+use app\services\bank\ZhifpServices;
 use crmeb\utils\Queue;
 use crmeb\utils\Str;
 use think\exception\ValidateException;
@@ -98,6 +99,24 @@ class StoreOrderRefundServices extends BaseServices
                         throw new ValidateException('余额退款失败');
                     }
                     break;
+                case 'zfp':
+                    //支付派原路退
+                    /** @var ZhifpServices $zhifpServices */
+                    $zhifpServices = app()->make(ZhifpServices::class);
+                    $bank_info = $zhifpServices->getBankInfo();
+                    $zfp_data = [
+                        'uid' => $bank_info['uid'],
+                        'price'=>$refundData['refund_price'],
+                        'orderno' => $order['order_id'],
+                        'desc' =>'原路退款',
+                        'token' => $bank_info['token']
+                    ];
+
+                    $res = $zhifpServices->payrefund($zfp_data);
+                    if($res['code']==400){
+                        throw new ValidateException( $res['datas']['error']);
+                    }
+
             }
 
             //回退积分和优惠卷
