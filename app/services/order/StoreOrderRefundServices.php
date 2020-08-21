@@ -114,7 +114,10 @@ class StoreOrderRefundServices extends BaseServices
 
                     $res = $zhifpServices->payrefund($zfp_data);
                     if($res['code']==400){
-                        throw new ValidateException( $res['datas']['error']);
+                        if($res['datas']['error']==NULL){
+                            $res['datas']['error']='';
+                        }
+                        throw new ValidateException($res['datas']['error']);
                     }
 
             }
