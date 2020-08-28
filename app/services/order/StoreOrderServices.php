@@ -194,7 +194,7 @@ class StoreOrderServices extends BaseServices
         } else if ($order['refund_status'] == 1) {
             $status['_type'] = -1;
             $status['_title'] = '申请退款中';
-            $status['_msg'] = '商家审核中,请耐心等待';
+            $status['_msg'] = '商家审核中，请务必联系客服沟通退款事宜';
             $status['_class'] = 'state-sqtk';
         } else if ($order['refund_status'] == 2) {
             $status['_type'] = -2;
