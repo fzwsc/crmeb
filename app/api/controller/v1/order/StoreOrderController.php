@@ -197,6 +197,16 @@ class StoreOrderController
         $orderInfo = $orderInfo->toArray();
         $info = compact('orderId', 'key');
         if ($orderId) {
+
+            if (bcsub((string)$orderInfo['pay_price'], '0', 2) <= 0) {
+                /** @var StoreOrderSuccessServices $success */
+                $success = app()->make(StoreOrderSuccessServices::class);
+                $payPriceStatus = $success->zeroYuanPayment($orderInfo, $uid);
+                if ($payPriceStatus)//0元支付成功
+                    return app('json')->status('success', '支付成功', $info);
+                else
+                    return app('json')->status('pay_error');
+            }
             switch ($payType) {
                 case "weixin":
                     if ($orderInfo['paid']) return app('json')->fail('支付已支付!');

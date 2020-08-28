@@ -102,24 +102,24 @@ class StoreOrderRefundServices extends BaseServices
                 case 'zfp':
                     //支付派原路退
                     /** @var ZhifpServices $zhifpServices */
-                    $zhifpServices = app()->make(ZhifpServices::class);
-                    $bank_info = $zhifpServices->getBankInfo();
-                    $zfp_data = [
-                        'uid' => $bank_info['uid'],
-                        'price'=>$refundData['refund_price'],
-                        'orderno' => $order['order_id'],
-                        'desc' =>'原路退款',
-                        'token' => $bank_info['token']
-                    ];
-
-                    $res = $zhifpServices->payrefund($zfp_data);
-                    if($res['code']==400){
-                        if($res['datas']['error']==NULL){
-                            $res['datas']['error']='';
-                        }
-                        throw new ValidateException($res['datas']['error']);
-                    }
-
+//                    $zhifpServices = app()->make(ZhifpServices::class);
+//                    $bank_info = $zhifpServices->getBankInfo();
+//                    $zfp_data = [
+//                        'uid' => $bank_info['uid'],
+//                        'price'=>$refundData['refund_price'],
+//                        'orderno' => $order['order_id'],
+//                        'desc' =>'原路退款',
+//                        'token' => $bank_info['token']
+//                    ];
+//
+//                    $res = $zhifpServices->payrefund($zfp_data);
+//                    if($res['code']==400){
+//                        if($res['datas']['error']==NULL){
+//                            $res['datas']['error']='';
+//                        }
+//                        throw new ValidateException($res['datas']['error']);
+//                    }
+                    break;
             }
 
             //回退积分和优惠卷
