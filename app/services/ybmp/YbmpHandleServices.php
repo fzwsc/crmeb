@@ -39,6 +39,11 @@ class  YbmpHandleServices extends BaseServices
             $rs['msg'] = '该电子券已使用';
             return $rs;
         }
+        if(!$evu['user_id']){
+            $rs['code'] = 1;
+            $rs['msg'] = '该券尚不可用';
+            return $rs;
+        }
         if($evu['begin_time']>time() || $evu['end_time']<time()){
             $rs['code'] = 1;
             $rs['msg'] = '该电子券不在使用期或已过期';
