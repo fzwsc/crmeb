@@ -108,7 +108,7 @@ class StoreOrderTakeServices extends BaseServices
                 $ybmpHandleServices = app()->make(YbmpHandleServices::class);
                 $res1 = $ybmpHandleServices->sendCommission($order['electronic_code']);
                 if (!$res1) {
-                    throw new ValidateException('收货失败!');
+                    throw new ValidateException('收货 失败!');
                 }
             }
 

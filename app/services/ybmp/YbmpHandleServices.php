@@ -99,6 +99,9 @@ class  YbmpHandleServices extends BaseServices
         if(!$ev['profit']){
             return true;
         }
+        if($evu['type']==2){
+            return true;
+        }
         $this->db->startTrans();
         $user_share_money = [
             'mch_id'  =>  $evu['mch_id'],
