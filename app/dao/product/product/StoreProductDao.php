@@ -168,6 +168,6 @@ class StoreProductDao extends BaseDao
             ->when($page, function ($query) use ($page, $limit) {
                 $query->page($page, $limit);
             })
-            ->select()->toArray();
+            ->order('sort asc')->select()->toArray();
     }
 }
