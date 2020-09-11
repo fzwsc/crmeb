@@ -262,6 +262,13 @@ class WechatUserServices extends BaseServices
         $uid = 0;
         if (isset($wechatInfo['phone']) && $wechatInfo['phone']) {
             $userInfo = $userServices->getOne(['phone' => $wechatInfo['phone']]);
+            //hsy 新增判断openid
+            if (!$userInfo) {
+                $wechatUser = $this->dao->getOne(['openid' => $openid]);
+                if($wechatUser){
+                    $userInfo=$userServices->getOne(['uid' => $wechatUser['uid']]);
+                }
+            }
         } else {
             $userInfo = $this->getAuthUserInfo($openid, $userType);
         }
