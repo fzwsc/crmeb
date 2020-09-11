@@ -281,6 +281,8 @@ class WechatUserServices extends BaseServices
             //更新用户表和wechat_user表
             /** @var LoginServices $loginService */
             $loginService = app()->make(LoginServices::class);
+            unset($wechatInfo['nickname']);
+            unset($wechatInfo['headimgurl']);
             $loginService->updateUserInfo($wechatInfo, $userInfo);
             //判断该类性用户在wechatUser中是否存在
             $wechatUser = $this->dao->getOne(['uid' => $uid, 'user_type' => $userType]);
