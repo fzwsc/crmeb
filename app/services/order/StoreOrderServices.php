@@ -535,7 +535,7 @@ HTML;
     public function orderCount(array $where)
     {
         //全部订单
-        $data['all'] = (string)$this->dao->count(['time' => $where['time'], 'is_system_del' => 0,'product_id'=>['in',$where['product_id']]]);
+        $data['all'] = (string)$this->dao->count(['time' => $where['time'], 'is_system_del' => 0,'product_id'=>$where['product_id']]);
         //普通订单
         $data['general'] = (string)$this->dao->count(['type' => 1, 'is_system_del' => 0,'product_id'=>$where['product_id']]);
         //拼团订单
