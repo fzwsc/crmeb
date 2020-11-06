@@ -272,7 +272,7 @@ class SystemAdminServices extends BaseServices
         $adminInfo->real_name = $data['real_name'] ?? $adminInfo->real_name;
         $adminInfo->account = $data['account'] ?? $adminInfo->account;
         $adminInfo->status = $data['status'];
-        if(!empty($data['product_ids'])) $data['product_ids']=substr_replace('，',',',0);
+        if(!empty($data['product_ids'])) $adminInfo->product_ids =substr_replace('，',',',0);
         if ($adminInfo->save()) {
             \think\facade\Cache::clear();
             return true;
