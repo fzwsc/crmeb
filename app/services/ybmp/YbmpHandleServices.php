@@ -153,7 +153,7 @@ class  YbmpHandleServices extends BaseServices
             //'该电子券不在使用期或已过期';
             $is_use=1004;
         }
-        if(!$evu['product_ids'] && !in_array($product_id,explode(',',$evu['product_ids']))){
+        if($evu['product_ids'] && !in_array($product_id,explode(',',$evu['product_ids']))){
             //'该券指定了商品使用，购买的商品不满足条件';
             $is_use=1005;
         }
