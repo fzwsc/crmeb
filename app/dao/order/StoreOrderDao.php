@@ -37,6 +37,8 @@ class StoreOrderDao extends BaseDao
             $query->where('is_del', $where['is_del']);
         })->when(isset($where['is_system_del']), function ($query) {
             $query->where('is_system_del', 0);
+        })->when(isset($where['product_id']), function ($query) use ($where) {
+            $query->where('product_id','in',$where['product_id']);
         })->when(isset($where['status']) && $where['status'] !== '', function ($query) use ($where) {
             switch ((int)$where['status']) {
                 case 0://未支付
