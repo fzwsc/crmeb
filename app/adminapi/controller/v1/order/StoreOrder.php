@@ -69,6 +69,9 @@ class StoreOrder extends AuthController
             ['pay_type', ''],
             ['order', ''],
         ]);
+        if(!empty($this->adminInfo['product_ids'])){
+            $where['product_id'] = ['in',explode(',',$this->adminInfo['product_ids'])];
+        }
         $where['shipping_type'] = 1;
         $where['is_system_del'] = 0;
         return $this->success($this->services->getOrderList($where, ['*'], ['pink']));
