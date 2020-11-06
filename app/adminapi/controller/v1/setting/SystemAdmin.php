@@ -63,6 +63,7 @@ class SystemAdmin extends AuthController
             ['pwd', ''],
             ['real_name', ''],
             ['roles', []],
+            ['product_ids', ''],
             ['status', 0],
         ]);
 
@@ -101,11 +102,12 @@ class SystemAdmin extends AuthController
             ['pwd', ''],
             ['real_name', ''],
             ['roles', []],
+            ['product_ids', ''],
             ['status', 0],
         ]);
 
         $this->validate($data, \app\adminapi\validate\setting\SystemAdminValidata::class, 'update');
-
+        if(!empty($data['product_ids'])) $data['product_ids']=substr_replace('，',',');
         if ($this->services->save((int)$id, $data)) {
             return $this->success('修改成功');
         } else {
