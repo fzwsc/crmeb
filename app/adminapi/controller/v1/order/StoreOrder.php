@@ -51,8 +51,7 @@ class StoreOrder extends AuthController
             [['type', 'd'], 0],
         ]);
         if(!empty($this->adminInfo['product_ids'])){
-            var_dump(1);
-            $where['product_id'] = ['in',$this->adminInfo['product_ids']];
+            $where['product_id'] = ['in','82,81'];
         }
         $data = $this->services->orderCount($where);
         return $this->success($data);
@@ -74,8 +73,8 @@ class StoreOrder extends AuthController
             ['order', ''],
         ]);
         if(!empty($this->adminInfo['product_ids'])){
-            var_dump(1);
-            $where['product_id'] = ['in',$this->adminInfo['product_ids']];
+            //$where['product_id'] = ['in',$this->adminInfo['product_ids']];
+            $where['product_id'] = ['in','82,81'];
         }
         $where['shipping_type'] = 1;
         $where['is_system_del'] = 0;
