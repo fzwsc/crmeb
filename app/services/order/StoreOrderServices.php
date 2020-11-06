@@ -535,15 +535,15 @@ HTML;
     public function orderCount(array $where)
     {
         //全部订单
-        $data['all'] = (string)$this->dao->count(['time' => $where['time'], 'is_system_del' => 0]);
+        $data['all'] = (string)$this->dao->count(['time' => $where['time'], 'is_system_del' => 0,'product_id'=>$where['product_id']]);
         //普通订单
-        $data['general'] = (string)$this->dao->count(['type' => 1, 'is_system_del' => 0]);
+        $data['general'] = (string)$this->dao->count(['type' => 1, 'is_system_del' => 0,'product_id'=>$where['product_id']]);
         //拼团订单
-        $data['pink'] = (string)$this->dao->count(['type' => 2, 'is_system_del' => 0]);
+        $data['pink'] = (string)$this->dao->count(['type' => 2, 'is_system_del' => 0,'product_id'=>$where['product_id']]);
         //秒杀订单
-        $data['seckill'] = (string)$this->dao->count(['type' => 3, 'is_system_del' => 0]);
+        $data['seckill'] = (string)$this->dao->count(['type' => 3, 'is_system_del' => 0,'product_id'=>$where['product_id']]);
         //砍价订单
-        $data['bargain'] = (string)$this->dao->count(['type' => 4, 'is_system_del' => 0]);
+        $data['bargain'] = (string)$this->dao->count(['type' => 4, 'is_system_del' => 0,'product_id'=>$where['product_id']]);
         switch ($where['type']) {
             case 0:
                 $data['statusAll'] = $data['all'];
@@ -562,23 +562,23 @@ HTML;
                 break;
         }
         //未支付
-        $data['unpaid'] = (string)$this->dao->count(['status' => 0, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['unpaid'] = (string)$this->dao->count(['status' => 0, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         //未发货
-        $data['unshipped'] = (string)$this->dao->count(['status' => 1, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['unshipped'] = (string)$this->dao->count(['status' => 1, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         //待收货
-        $data['untake'] = (string)$this->dao->count(['status' => 2, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['untake'] = (string)$this->dao->count(['status' => 2, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         //待核销
-        $data['write_off'] = (string)$this->dao->count(['status' => 5, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['write_off'] = (string)$this->dao->count(['status' => 5, 'time' => $where['time'], 'shipping_type' => 1, 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         //待评价
-        $data['unevaluate'] = (string)$this->dao->count(['status' => 3, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['unevaluate'] = (string)$this->dao->count(['status' => 3, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         //交易完成
-        $data['complete'] = (string)$this->dao->count(['status' => 4, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['complete'] = (string)$this->dao->count(['status' => 4, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         //退款中
-        $data['refunding'] = (string)$this->dao->count(['status' => -1, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['refunding'] = (string)$this->dao->count(['status' => -1, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         //已退款
-        $data['refund'] = (string)$this->dao->count(['status' => -2, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['refund'] = (string)$this->dao->count(['status' => -2, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         //删除订单
-        $data['del'] = (string)$this->dao->count(['status' => -4, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type']]);
+        $data['del'] = (string)$this->dao->count(['status' => -4, 'time' => $where['time'], 'is_system_del' => 0, 'type' => $where['type'],'product_id'=>$where['product_id']]);
         return $data;
     }
 
