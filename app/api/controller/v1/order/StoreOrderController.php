@@ -4,6 +4,7 @@ namespace app\api\controller\v1\order;
 
 use app\Request;
 use app\services\ybmp\YbmpHandleServices;
+use think\exception\ValidateException;
 use think\facade\Env;
 use app\services\system\admin\SystemAdminServices;
 use app\services\activity\{
@@ -183,7 +184,12 @@ class StoreOrderController
             }
         }
 
-        $order = $createServices->createOrder($uid, $key, $cartGroup, $request->user()->toArray(), $addressId, $payType, !!$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $isChannel, $shipping_type, $real_name, $phone, $storeId, !!$news,$electronic_code);
+        try{
+            $order = $createServices->createOrder($uid, $key, $cartGroup, $request->user()->toArray(), $addressId, $payType, !!$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $isChannel, $shipping_type, $real_name, $phone, $storeId, !!$news,$electronic_code);
+        }
+        catch(ValidateException $ex){
+            return app('json')->fail($ex->getMessage());
+        }
         if ($order === false) {
             //回退占用
             $seckillServices->cancelOccupySeckillStock($cartGroup['cartInfo'], $key);
