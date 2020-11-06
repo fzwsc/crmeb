@@ -125,4 +125,44 @@ class  YbmpHandleServices extends BaseServices
             return false;
         }
     }
+
+    /**
+     * 判断是否是指定商品使用该电子券
+     * @param $name
+     * @param $mobile
+     * @param $type
+     * @return mixed
+     */
+    public function isProductUse($code,$product_id)
+    {
+        $is_use=1000;
+        $evu = Db::connect('ybmp')->name('ybmp_electronic_voucher_use')->where('code',$code)->find();
+        if(!$evu){
+            //'电子券不存在';
+            $is_use=1001;
+        }
+        if($evu['status']==1){
+            //'该电子券已使用';
+            $is_use=1002;
+        }
+        if(!$evu['user_id']){
+            //'该券尚不可用';
+            $is_use=1003;
+        }
+        if($evu['begin_time']>time() || $evu['end_time']<time()){
+            //'该电子券不在使用期或已过期';
+            $is_use=1004;
+        }
+        if(!$evu['product_ids'] && !in_array($product_id,explode(',',$evu['product_ids']))){
+            //'该券指定了商品使用，购买的商品不满足条件';
+            $is_use=1005;
+        }
+        $yev = Db::connect('ybmp')->name('ybmp_electronic_voucher')->where('id',$evu['e_id'])->find();
+        if(!$yev){
+            //'电子券不存在';
+            $is_use=1006;
+        }
+
+        return $is_use;
+    }
 }

@@ -134,10 +134,12 @@ class StoreOrderCreateServices extends BaseServices
         $cartInfo = $cartGroup['cartInfo'];
         $priceGroup = $cartGroup['priceGroup'];
         $cartIds = [];
+        $productId = "";
         $totalNum = 0;
         $gainIntegral = 0;
         foreach ($cartInfo as $cart) {
             $cartIds[] = $cart['id'];
+            $productId = $cart['productInfo']['id'];
             $totalNum += $cart['cart_num'];
             if (!$seckillId) $seckillId = $cart['seckill_id'];
             if (!$bargainId) $bargainId = $cart['bargain_id'];
@@ -152,6 +154,14 @@ class StoreOrderCreateServices extends BaseServices
             unset($computedServices->payType['offline']);
             if (!array_key_exists($payType, $computedServices->payType)) {
                 throw new ValidateException('营销商品不能使用线下支付!');
+            }
+        }
+        if($electronic_code) {
+            /** @var YbmpHandleServices $ybmpHandleServices */
+            $ybmpHandleServices = app()->make(YbmpHandleServices::class);
+            $res_code=$ybmpHandleServices->isProductUse($electronic_code,$productId);
+            if($res_code!=1000){
+                throw new ValidateException('电子券使用异常，异常码'.$res_code);
             }
         }
         //$shipping_type = 1 快递发货 $shipping_type = 2 门店自提
@@ -189,6 +199,7 @@ class StoreOrderCreateServices extends BaseServices
             'shipping_type' => $shippingType,
             'electronic_code'=>$electronic_code,
             'electronic_money'=>$priceData['electronic_sub_price'],
+            'product_id'=>$productId,
         ];
         if ($shippingType === 2) {
             $orderInfo['verify_code'] = $this->getStoreCode();

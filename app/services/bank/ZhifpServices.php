@@ -14,8 +14,10 @@ class ZhifpServices extends BaseServices
     protected $host = '';
     public function __construct(SystemBankDao $dao)
     {
-        $this->appid = 'e4da3b7fbbce2345d7772b0674a318d5';
-        $this->appsecret = '8c81f14df60460609c596450babcb0b997c9907b';
+//        $this->appid = 'e4da3b7fbbce2345d7772b0674a318d5';
+//        $this->appsecret = '8c81f14df60460609c596450babcb0b997c9907b';
+        $this->appid = 'c81e728d9d4c2f636f067f89cc14862c';
+        $this->appsecret = '7c56232549ee2750791a1d1f802f3652fd3b1338';
         $this->host = 'http://pay.fzwsc.com';
         $this->dao = $dao;
     }
