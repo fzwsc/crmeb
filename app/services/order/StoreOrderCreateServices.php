@@ -161,7 +161,7 @@ class StoreOrderCreateServices extends BaseServices
             $ybmpHandleServices = app()->make(YbmpHandleServices::class);
             $res_code=$ybmpHandleServices->isProductUse($electronic_code,$productId);
             if($res_code!=1000){
-                throw new ValidateException('电子券使用异常，异常码'.$res_code);
+                throw new ValidateException('电子券不适用，错误码'.$res_code);
             }
         }
         //$shipping_type = 1 快递发货 $shipping_type = 2 门店自提
