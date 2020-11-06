@@ -50,6 +50,9 @@ class StoreOrder extends AuthController
             ['data', '', '', 'time'],
             [['type', 'd'], 0],
         ]);
+        if(!empty($this->adminInfo['product_ids'])){
+            $where['product_id'] = ['in',$this->adminInfo['product_ids']];
+        }
         $data = $this->services->orderCount($where);
         return $this->success($data);
     }
@@ -70,7 +73,6 @@ class StoreOrder extends AuthController
             ['order', ''],
         ]);
         if(!empty($this->adminInfo['product_ids'])){
-            var_dump(1);
             $where['product_id'] = ['in',$this->adminInfo['product_ids']];
         }
         $where['shipping_type'] = 1;
