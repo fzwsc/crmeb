@@ -107,7 +107,6 @@ class SystemAdmin extends AuthController
         ]);
 
         $this->validate($data, \app\adminapi\validate\setting\SystemAdminValidata::class, 'update');
-        if(!empty($data['product_ids'])) $data['product_ids']=substr_replace('，',',',0);
         if ($this->services->save((int)$id, $data)) {
             return $this->success('修改成功');
         } else {
