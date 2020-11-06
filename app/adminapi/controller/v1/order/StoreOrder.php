@@ -69,6 +69,7 @@ class StoreOrder extends AuthController
             ['pay_type', ''],
             ['order', ''],
         ]);
+        var_dump($this->adminInfo);
         if(!empty($this->adminInfo['product_ids'])){
             $where['product_id'] = ['in',explode(',',$this->adminInfo['product_ids'])];
         }
