@@ -188,7 +188,7 @@ class StoreOrderController
             $order = $createServices->createOrder($uid, $key, $cartGroup, $request->user()->toArray(), $addressId, $payType, !!$useIntegral, $couponId, $mark, $combinationId, $pinkId, $seckill_id, $bargainId, $isChannel, $shipping_type, $real_name, $phone, $storeId, !!$news,$electronic_code);
         }
         catch(ValidateException $ex){
-            return app('json')->fail($ex->getMessage());
+            return app('json')->status('order_error',$ex->getMessage());
         }
         if ($order === false) {
             //回退占用
